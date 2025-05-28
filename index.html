@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Сделать снимок</title>
+</head>
+<body>
+  <h1>Сделать снимок с камеры</h1>
+  <video id="video" width="640" height="480" autoplay></video>
+  <button id="snap">Сделать снимок</button>
+  <canvas id="canvas" width="640" height="480"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const snap = document.getElementById('snap');
+
+    // Запрос доступа к камере
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        console.error("Ошибка доступа к камере: " + err);
+      });
+
+    // Снимок
+    snap.addEventListener('click', () => {
+      context.drawImage(video, 0, 0, 640, 480);
+
+      // Получение изображения
+      const imageData = canvas.toDataURL('image/png');
+
+      // Отправка на сервер (пример)
+      fetch('https://your-server.com/upload', {
+        method: 'POST',
+        body: JSON.stringify({ image: imageData }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    });
+  </script>
+</body>
+</html>
